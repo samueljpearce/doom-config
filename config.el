@@ -1,5 +1,4 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
@@ -8,6 +7,18 @@
 ;; clients, file templates and snippets.
 (setq user-full-name "Samuel J Pearce"
       user-mail-address "sjpearce27@gmail.com")
+	  
+(defun insert-system-name()
+(interactive)
+"Get current system's name"
+(insert (format "%s" (system-name)))
+)
+
+(defun system-is-my-laptop()
+(interactive)
+"Return true if the system we are running on is my laptop"
+(string-equal (system-name) "SAMUEL-LAPTOP")
+)
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -29,7 +40,9 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "d:/OneDrive/Documents/org/")
+(if (system-is-my-laptop)
+    (set 'org-directory "c:/Users/sjpea/OneDrive/Documents/org/")
+ (set 'org-directory "d:/OneDrive/Documents/org/"))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -53,16 +66,21 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
+
+;; Org Mode Config ----------------------------
+
+(setq org-startup-folded t)
+
 ;;Start org-protocol
 (server-start)
-(require `org-protocol)
-(require `org-roam-protocol)
+(require 'org-protocol)
+(require 'org-roam-protocol)
 
 (load-file "~/.emacs.d/+org-protocol-check-filename-for-protocol.el")
 (advice-add 'org-protocol-check-filename-for-protocol :override '+org-protocol-check-filename-for-protocol)
 
 ;; Set org-capture templates
-(setq org-agenda-inbox "d:/OneDrive/Documents/org/inbox.org")
+(setq org-agenda-inbox (concat org-directory "/inbox.org"))
   (setq org-capture-templates
         `(("i" "inbox" entry (file org-agenda-inbox)
            "* TODO %?")
