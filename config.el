@@ -75,8 +75,18 @@
           )
         )
 ;; Set org-ref defaults
- (setq reftex-default-bibliography '("d:/OneDrive/Documents/org/roam/roam-ref.bib"))
-  (setq org-ref-default-bibliography '("d:/OneDrive/Documents/org/roam/roam-ref.bib"))
+ (setq reftex-default-bibliography (concat org-directory "/roam/roam-ref.bib"))
+  (setq org-ref-default-bibliography (concat org-directory "/roam/roam-ref.bib"))
+
+;; Elfeed/elfeed-org config -----------------------------
+(setq rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
+(map! :leader
+      :desc "elfeed"
+     "o e" #'elfeed)
+
+(after! elfeed
+  (setq elfeed-search-filter "@1-month-ago +unread"))
+(add-hook! 'elfeed-search-mode-hook 'elfeed-update)
 
 ;; Set ESS R directory
  (setq ess-directory-containing-R "c:/Program Files")
