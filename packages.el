@@ -10,6 +10,7 @@
 ;(package! some-package)
 (package! bibtex)
 (package! org-roam)
+(package! org-gtd)
 (package! polymode)
 (package! org-superstar)
 (package! elfeed-dashboard
