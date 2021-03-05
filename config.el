@@ -99,14 +99,24 @@
 
 ;; Elfeed/elfeed-org config -----------------------------
 (setq rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
-(map! :leader
-      :desc "elfeed"
-     "o e" #'elfeed)
-
+;; (map! :leader
+;;       :desc "elfeed"
+;;       "o e" #'elfeed)
+(map! :map elfeed-search-mode-map
+      :leader
+      :n "m u" #'elfeed-update)
 (after! elfeed
   (setq elfeed-search-filter "@1-month-ago +unread"))
 (add-hook! 'elfeed-search-mode-hook 'elfeed-update)
 
+;; Elfeed Dashboard
+(use-package elfeed-dashboard
+  :load-path "~/.emacs.d/.local/straight/repos/elfeed-dashboard/"
+  :config (setq elfeed-dashboard-file "~/.emacs.d/.local/straight/repos/elfeed-dashboard/elfeed-dashboard.org"))
+
+(map! :leader
+      :desc "elfeed-dashboard"
+      "o e" #'elfeed-dashboard)
 ;; Set ESS R directory
  (setq ess-directory-containing-R "c:/Program Files")
  (require 'ess-site)
