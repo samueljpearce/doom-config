@@ -170,3 +170,10 @@
 ;; Set ESS R directory
  (setq ess-directory-containing-R "c:/Program Files")
  (require 'ess-site)
+
+;; Set ledger-mode config
+(setq ledger-binary-path "C:/ProgramData/chocolatey/bin")
+(autoload 'ledger-mode "ledger-mode" "A major mode for Ledger" t)
+(add-to-list 'load-path
+              (expand-file-name "~/.emacs.d/.local/straight/repos/ledger-mode"))
+(add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode))
