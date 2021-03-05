@@ -2,6 +2,7 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+(add-hook 'emacs-startup-hook 'toggle-frame-maximized)
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
