@@ -10,7 +10,11 @@
 ;(package! some-package)
 (package! bibtex)
 (package! org-roam)
+(package! websocket)
+(package! org-roam-ui
+         :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 (package! org-gtd)
+(package! org-chef)
 (package! polymode)
 (package! org-superstar)
 (package! elfeed-dashboard

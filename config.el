@@ -42,8 +42,8 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (if (system-is-my-laptop)
-    (set 'org-directory "c:/Users/sjpea/OneDrive/Documents/org/")
- (set 'org-directory "d:/OneDrive/Documents/org/"))
+    (set 'org-directory "c:/Users/sjpea/OneDrive/Documents/org")
+ (set 'org-directory "d:/OneDrive/Documents/org"))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -121,7 +121,15 @@
                                 ("l" "Todo with link"
                                  entry (file ,(org-gtd--path org-gtd-inbox-file-basename))
                                  "* %?\n%U\n\n  %i\n  %a"
-                                 :kill-buffer t))))
+                                 :kill-buffer t)
+                                ("c" "Cookbook"
+                                 entry (file "cookbook.org")
+                                                   "%(org-chef-get-recipe-from-url)"
+                                                   :empty-lines 1)
+                                 ("m" "Manual Cookbook"
+                                  entry (file "cookbook.org")
+                                  "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n  :prep-time:\n  :cook-time:\n  :ready-in:\n  :END:\n** Notes   \n** Ingredients\n   %?\n** Directions\n\n")))
+)
 ;(setq org-agenda-inbox (concat org-directory "/inbox.org"))
 ;  (setq org-capture-templates
 ;        `(("i" "inbox" entry (file org-agenda-inbox)
@@ -140,15 +148,46 @@
 (require 'org-protocol)
 (require 'org-roam-protocol)
 
-(load-file "~/.emacs.d/+org-protocol-check-filename-for-protocol.el")
-(advice-add 'org-protocol-check-filename-for-protocol :override '+org-protocol-check-filename-for-protocol)
+;; Org Roam
+(use-package org-roam
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory (concat org-directory "/roam"))
+  (org-roam-dailies-directory "journals/")
+  (org-roam-capture-templates
+   '(("d" "default" plain "%?"
+      :if-new (file+head "pages/%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n")
+      :unnarrowed t))))
+(setq org-roam-graph-executable "P:/Program Files/Graphviz/bin/dot.exe")
+(setq org-roam-graph-viewer "C:/Program Files (x86)/BraveSoftware/Brave-Browser/Application/brave.exe")
+
+;; org-roam-ui (successor to org-roam-server)
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+    :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+
+;;(load-file "~/.emacs.d/+org-protocol-check-filename-for-protocol.el")
+;;(advice-add 'org-protocol-check-filename-for-protocol :override '+org-protocol-check-filename-for-protocol)
 
 ;; Set org-ref defaults
  (setq reftex-default-bibliography (concat org-directory "/roam/roam-ref.bib"))
   (setq org-ref-default-bibliography (concat org-directory "/roam/roam-ref.bib"))
 
 ;; Elfeed/elfeed-org config -----------------------------
-(setq rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
+(setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
 ;; (map! :leader
 ;;       :desc "elfeed"
 ;;       "o e" #'elfeed)
