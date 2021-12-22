@@ -159,7 +159,15 @@
    '(("d" "default" plain "%?"
       :if-new (file+head "pages/%<%Y%m%d%H%M%S>-${slug}.org"
                          "#+title: ${title}\n")
-      :unnarrowed t))))
+      :unnarrowed t)))
+  (org-roam-dailies-capture-templates
+   '(("d" "default" entry
+      "* %<%I:%M %p>: %?"
+      :if-new (file+head "%<%Y-%m-%d>.org"
+                         "#+title: %<%Y-%m-%d>\n")))))
+  :config
+  (require 'org-roam-dailies)
+
 (setq org-roam-graph-executable "P:/Program Files/Graphviz/bin/dot.exe")
 (setq org-roam-graph-viewer "C:/Program Files (x86)/BraveSoftware/Brave-Browser/Application/brave.exe")
 
