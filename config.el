@@ -7,7 +7,7 @@
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Samuel J Pearce"
-      user-mail-address "sjpearce27@gmail.com")
+      user-mail-address "samueljpearce@mailbox.org")
 	  
 (defun insert-system-name()
 (interactive)
@@ -41,9 +41,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(if (system-is-my-laptop)
-    (set 'org-directory "c:/Users/sjpea/OneDrive/Documents/org")
- (set 'org-directory "d:/OneDrive/Documents/org"))
+(set 'org-directory "c:/Users/sjpea/Documents/icedrive/documents/org")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -74,6 +72,7 @@
         ;; Org-gtd
 (setq org-edna-use-inheritance t)
 (org-edna-mode 1)
+(setq org-gtd-update-ack "3.0.0")
 
 (use-package! org-gtd
   :after org
@@ -88,6 +87,7 @@
   ;; org-edna is used to make sure that when a project task gets DONE,
   ;; the next TODO is automatically changed to NEXT.
   (org-edna-use-inheritance t)
+  (org-gtd-organize-hooks '(org-gtd-set-area-of-focus org-set-tags-command))
   :config
   (org-edna-mode)
   :bind
@@ -96,8 +96,8 @@
    ("C-c d p" . org-gtd-process-inbox)
    ("C-c d n" . org-gtd-show-all-next)
    ("C-c d s" . org-gtd-show-stuck-projects)
-   :map org-gtd-process-map
-   ("C-c c" . org-gtd-choose)))
+   :map org-gtd-clarify-map
+   ("C-c c" . org-gtd-organize)))
 
         ;; Set org-capture templates
 (use-package! org-capture
@@ -128,6 +128,22 @@
 (require 'org-protocol)
 (require 'org-roam-protocol)
 
+;; Set citar defaults
+(use-package! citar
+  :custom
+  (citar-bibliography (concat org-directory "/bib/zotero.bib"))
+  (citar-notes-path (concat org-directory "/roam/references"))
+  :bind
+  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+
+(use-package citar-org-roam
+  :after (citar org-roam)
+  :config
+  (citar-org-roam-mode)
+  :custom
+  (citar-org-roam-note-title-template "${author} (${year}). ${title}")
+  ;;(citar-org-roam-capture-template-key "r")
+  )
 ;; Org Roam
 (use-package org-roam
   :init
@@ -136,15 +152,23 @@
   (org-roam-directory (concat org-directory "/roam"))
   (org-roam-dailies-directory "journals/")
   (org-roam-capture-templates
-   '(("d" "default" plain "%?"
-      :if-new (file+head "pages/%<%Y%m%d%H%M%S>-${slug}.org"
-                         "#+title: ${title}\n")
-      :unnarrowed t)))
+   '(("d" "default" plain
+      "%?"
+      :if-new(file+head "pages/%<%Y%m%d%H%M%S>-${slug}.org"
+                        "#+title: ${title} \n#+created: %u \n#+modified:")
+      :immediate-finish t
+      :unnarrowed t)
+     ("r" "reference" plain
+     "%?"
+     :target(file+head "references/${citekey}.org"
+                       "#+title: ${title} \n#+created: %u \n#+modified:")
+     :immediate-finish t
+     :unnarrowed t)))
   (org-roam-dailies-capture-templates
    '(("d" "default" entry
       "* %<%I:%M %p>: %?"
-      :if-new (file+head "%<%Y-%m-%d>.org"
-                         "#+title: %<%Y-%m-%d>\n")))))
+      :target(file+head "%<%Y-%m-%d>.org"
+                        "#+title: %<%Y-%m-%d>\n")))))
   :config
   (require 'org-roam-dailies)
 
@@ -170,9 +194,6 @@
 ;;(load-file "~/.emacs.d/+org-protocol-check-filename-for-protocol.el")
 ;;(advice-add 'org-protocol-check-filename-for-protocol :override '+org-protocol-check-filename-for-protocol)
 
-;; Set org-ref defaults
- (setq reftex-default-bibliography (concat org-directory "/roam/roam-ref.bib"))
-  (setq org-ref-default-bibliography (concat org-directory "/roam/roam-ref.bib"))
 
 ;; Elfeed/elfeed-org config -----------------------------
 (setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
